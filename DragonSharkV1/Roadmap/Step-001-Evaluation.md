@@ -3,7 +3,7 @@ The idea of this step is to evaluate the current state and create a checkpoint o
 
 1. Document the involved hardware and Operative System.
 2. Document the installed software services. So far, they're:
-	1. The well-known `emulationstation` launcher with `libretro` emulators.
+	1. The well-known `emulationstation` launcher with `retroarch` interface to `libretro` emulators.
 	2. The brand-new `Hawa` games launcher.
 	3. The gamepad server.
 3. Save a snapshot image (an `ISO` file) and define the policies to properly store it (backup).
