@@ -19,13 +19,13 @@ The idea is to traverse the technical specifications of the console, in terms of
 2. OS specifications and configuration (e.g. default users' credentials). If the credentials cannot be retrieved, they should be forced to default values.
 3. Installed drivers (e.g. graphics, sound).
 
-Everything must be noted in [the Specifications file](Documentation/Specifications).
+Everything must be noted in [the Specifications file](DragonSharkV1/Documentation/Specifications.md).
 ## Installed Software Services
 The idea is to tell about the software services that are installed in the console. These services are technical in nature, and the end user does not need to know about them except for arising problems. They're:
 
-1. The `libretro` and `emulationstation` packages, detailed in [the Emulators page](Documentation/Development/Services/Emulators).
-2. The Hawa Launcher service, detailed in [the Launcher page](Documentation/Development/Services/Launcher).
-3. The Hawa VirtualPad service, detailed in [the VirtualPad page](Documentation/Development/Services/VirtualPad).
+1. The `libretro` and `emulationstation` packages, detailed in [the Emulators page](Emulators.md).
+2. The Hawa Launcher service, detailed in [the Launcher page](Launcher.md).
+3. The Hawa VirtualPad service, detailed in [the VirtualPad page](VirtualPad.md).
 
 The only required thing is to document everything there.
 
