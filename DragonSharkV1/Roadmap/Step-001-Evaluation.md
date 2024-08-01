@@ -15,11 +15,11 @@ The deliverables from this task involve completing certain specifications / deve
 ## Hardware and Operative System
 The idea is to traverse the technical specifications of the console, in terms of hardware and software. This includes:
 
-1. Hardware specifications.
-2. OS specifications and configuration (e.g. default users' credentials). If the credentials cannot be retrieved, they should be forced to default values.
-3. Installed drivers (e.g. graphics, sound).
+1. [x] Hardware specifications.
+2. [x] OS specifications and configuration (e.g. default users' credentials). If the credentials cannot be retrieved, they should be forced to default values.
+3. [x] Installed drivers (e.g. graphics, sound).
 
-Everything must be noted in [the Specifications file](DragonSharkV1/Documentation/Specifications.md).
+- [x] Everything must be noted in [the Specifications file](HardwareSpecs.md).
 ## Installed Software Services
 The idea is to tell about the software services that are installed in the console. These services are technical in nature, and the end user does not need to know about them except for arising problems. They're:
 
@@ -31,4 +31,4 @@ The only required thing is to document everything there.
 
 No extra services are installed _at this stage of the development_ but that does not mean that no more services will definitely be present in a later stage.
 ## Saving a Snapshot
-The idea here is to take a snapshot using the `dd` tool and taking
+The idea here is to take a snapshot using the `dd` tool. https://wiki.banana-pi.org/Getting_Started_with_M5/M2Pro#Install_Image_to_EMMC
