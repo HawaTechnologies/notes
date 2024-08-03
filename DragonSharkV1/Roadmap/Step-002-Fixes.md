@@ -1,0 +1,2 @@
+- [ ] I have some __TODO FIX__ and __TODO FEATURE__ entries, in this repository, to fix/improve later. Notably, in files 003.Layout and 004.Services in the Development documentation.
+- [ ] Also, I need to, again, create a backup of the current state of the storage.

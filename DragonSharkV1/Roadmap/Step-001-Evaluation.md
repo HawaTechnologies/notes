@@ -23,12 +23,12 @@ The idea is to traverse the technical specifications of the console, in terms of
 ## Installed Software Services
 The idea is to tell about the software services that are installed in the console. These services are technical in nature, and the end user does not need to know about them except for arising problems. They're:
 
-1. The `libretro` and `emulationstation` packages, detailed in [the Emulators page](Emulators.md).
-2. The Hawa Launcher service, detailed in [the Launcher page](Launcher.md).
-3. The Hawa VirtualPad service, detailed in [the VirtualPad page](VirtualPad.md).
+1. [x] The `libretro` and `emulationstation` packages.
+2. [x] The Hawa Launcher service.
+3. [x] The Hawa VirtualPad service.
 
 The only required thing is to document everything there.
 
 No extra services are installed _at this stage of the development_ but that does not mean that no more services will definitely be present in a later stage.
 ## Saving a Snapshot
-The idea here is to take a snapshot using the `dd` tool. https://wiki.banana-pi.org/Getting_Started_with_M5/M2Pro#Install_Image_to_EMMC
+- [x] The idea here is to take a snapshot using the `dd` tool. https://wiki.banana-pi.org/Getting_Started_with_M5/M2Pro#Install_Image_to_EMMC
