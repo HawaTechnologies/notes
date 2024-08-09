@@ -1,5 +1,3 @@
 - [x] I have some __TODO FIX__ and __TODO FEATURE__ entries, in this repository, to fix/improve later. Notably, in files 003.Layout and 004.Services in the Development documentation.
 - [x] Also, I need to, again, create a backup of the current state of the storage.
-- [x] En el repositorio ya está, pero en la consola se necesita la nueva versión: Cuando se re-crea el server (otro: launch_pad_server) ante un `server:start` tenemos que pasarle como segundo parámetro (hoy solo le pasamos uno, y eso es un error) `self.server.slots`.
-- [x] Tengo que entrar a la consola y copiarme los archivos es_systems.cfg, es_systems.template.cfg y los saves. Tengo que _anotarlo todo_ (o sea tmb los caminos en donde se encuentran).
-- [ ] Tengo también que crear una partición /mnt/SAVES y /mnt/CURRENT_SAVE _en mi computadora_, y la lista apropiada de directorios.
+- [ ] Fix and make a new backup: I have a config file named `desmune2015.cfg` in the `.config/retroarch/config` in-home directory. It must be `desmume2025.cfg` instead. Also check the `.emulationstation/es_systems.cfg` (and the template) to have the proper spelling.
