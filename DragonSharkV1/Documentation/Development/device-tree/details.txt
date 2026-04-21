@@ -1,0 +1,19 @@
+Complete Fix Summary
+1. Device Tree Fixes (meson-sm1-bananapi-m5.dts)
+
+Added status = "okay" to the sound {} node
+Fixed audio-widgets from "Line\0Lineout" → "Line Out\0Lineout"
+Enabled TDMOUT_A (status = "disabled" → "okay")
+Added pinctrl-0 and pinctrl-names to TDM_B and TDM_C interfaces
+Fixed dai-link-6 and dai-link-7 slot configuration — added dai-tdm-slot-num = <2> and dai-tdm-slot-width = <32>, removed extra tx-masks
+
+2. ALSA Mixer Routing (/var/lib/alsa/asound.state)
+Saved via sudo alsactl store after setting:
+
+FRDDR_B SRC 1 EN → on
+FRDDR_B SINK 1 SEL → OUT 1
+TDMOUT_B all lane volumes → 255
+TDMOUT_B Gain Enable → on
+TDMOUT_B SRC SEL → IN 1
+TOHDMITX Switch → on
+TOHDMITX I2S SRC → I2S B
