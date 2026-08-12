@@ -199,8 +199,50 @@ where we can support multiple output formats and also paging / querying.
 
 ### Using the household
 
-Using the household is done via HTTP and, ideally, everything behind an HTTPS-enabling proxy.
+Using the household is done via HTTP and, ideally, behind an HTTPS-enabling reverse proxy.
 This is because what happens here at login time / recovery time involves credentials and
 vault-related secrets, and using pure HTTP means exposing those values.
 
-Now, all the request are household-scoped under the /$HOUSEHOLD_NAME/ prefix.
+Now, all requests are household-scoped under the /$HOUSEHOLD_NAME/ prefix.
+
+The first thing to do is a login:
+
+```
+POST /$HOUSEHOLD_NAME/login
+Content-Type: application/json
+{
+    "username": "{username or '~'}",
+    "password": "{password}"
+}
+```
+
+Using the `~` username implies logging with the household password, not a regular user.
+Otherwise, the username must be valid (case-insensitive matching can be considered) for
+the specified household.
+
+Appropriate errors must be returned in the case of an error, but a session id must be
+returned on success. Something like this:
+
+```
+{
+    "session_id": "...", # e.g. 64 opaque and high-entropy hexadecimal digits.
+}
+```
+
+This `session_id` will be used for all the other HTTP endpoints. For example, when the
+user wants to insta-revoke its session id, they call this endpoint:
+
+```
+POST /$HOUSEHOLD_NAME/logout
+Authorization: Bearer {session_id}
+```
+
+and, on success, it has its session id revoked. Other operations will also use the same
+`Authorization` header in the same way.
+
+Session ids are sensitive. This is an important matter: Browser extensions will keep the
+session id in the background context (in a Manifest V2 / V3 Chrome-like extension), and
+never in cookies, local storage, or any page-space code-reachable process. Also, mobile
+extensions will have the session id in-memory only, and never persisting it to any kind
+of storage. A restart on either application or context will cause the user the need to
+login again.
