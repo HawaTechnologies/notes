@@ -111,3 +111,36 @@ For this, the lines 1 and 2 must match, and also the lines 3 and 4 must match.
 By this point, the household will be created. The user is totally responsible for backing up the
 password and the vault key (both things are needed, but the vault key is the thing to worry more
 about, since it holds the only possibility to access the vault data).
+
+If somehow the keys are lost, there must be a mean to recover them. Here, the goal is to recover
+them for the household itself. Methods are:
+
+- To provision the vault key, and reset the password. This checks the vault key first, and then
+  sets a new password for the user.
+- To provision the password, and recover the existing vault key.
+
+Neither of these methods destroys or rotates the vault key nor the users' passwords or copies of
+the vault key. The methods look like this:
+
+```shell
+household get-vault-key $HOUSEHOLD_NAME
+```
+
+Which prompts for:
+
+```
+Household password: {stdin line 1}
+```
+
+and also:
+
+```shell
+household reset-password $HOUSEHOLD_NAME
+```
+
+Which prompts for:
+
+```
+Household vault key: {stdin line 1}
+```
+
