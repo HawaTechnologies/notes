@@ -246,3 +246,13 @@ never in cookies, local storage, or any page-space code-reachable process. Also,
 extensions will have the session id in-memory only, and never persisting it to any kind
 of storage. A restart on either application or context will cause the user the need to
 login again.
+
+Just remember that, while all the endpoints here require the same Authorization header,
+certain endpoints are household plane (i.e. only allowed for sessions created for the
+user `~`) and certain endpoints are user plane (i.e. only allowed for session created
+for other users), throwing respective 403 errors when trying to hit endpoints in wrong
+plane.
+
+Concrete actions will be described in a later section or file.
+
+### About the security of sessions
