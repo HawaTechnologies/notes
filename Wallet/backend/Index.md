@@ -70,3 +70,44 @@ of the household. This implies:
 - Actions related to ERC-4337 account deployments and maintenance.
 
 This is the most important level.
+
+## Life-cycle of a household server
+
+The first thing is to mount the server and ensure the database exists. If the database is
+a documental one (like Mongo DB), then nothing is needed other than setting up the database
+server. Otherwise, an initial schema / migration is needed if the underlying database is SQL.
+
+If the database server is mounted as part of the stack, the database server will be already
+present and, if it's SQL, an internal migration script is needed.
+
+Once the setup is done and the database becomes available, the master plane will be available.
+It might even be needed a setup at master plane level (e.g. a command `initialize` to run the
+initial migrations of the database, if it's of SQL type). The master plane, however, is only
+accessible at local level (direct commands, and never a web API).
+
+The first step is to create a household. It may involve an internal command like this:
+
+```shell
+household add $HOUSEHOLD_NAME
+```
+
+This command will be executed, typically, in-pod or in-container (this depends on the deployment
+type) and it must take the password via stdin (this implies taking the appropriate provisions in
+either Docker, Kubernetes or whatever is used for deployment). After setting the password, it
+must take the deployment passphrase. In order to make things secure, this command would actually
+take four standard input lines:
+
+```
+--- Household Plane credentials ---
+Password: {stdin line 1}
+Confirm: {stdin line 2}
+--- Household Plane vault key ---
+Vault key: {stdin line 3}
+Confirm: {stdin line 4}
+```
+
+For this, the lines 1 and 2 must match, and also the lines 3 and 4 must match.
+
+By this point, the household will be created. The user is totally responsible for backing up the
+password and the vault key (both things are needed, but the vault key is the thing to worry more
+about, since it holds the only possibility to access the vault data).
