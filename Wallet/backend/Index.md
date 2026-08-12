@@ -46,8 +46,11 @@ the accounts, being them EOAs for deployment, EOAs for authority and policy mana
 final ERC-4337 accounts.
 
 A household is managed by an implicit superuser (this means: each household on itself has its
-own password, as if on itself it were a kind of user). This password works as an *envelope* for
-an internal passphrase that serves to encrypt the actual vault (we call it: vault key).
+own password, as if on itself it were a kind of user). This password is used to make an *envelope*
+for an internal passphrase that serves to encrypt the actual vault (we call it: vault key). This
+is done indirectly (the password is used to derive a key which, in turn, is used to decrypt the
+wrapped / enveloped vault key, and this vault key is used to encrypt / decrypt the vault so the
+operations against the vault can be executed).
 
 The household plane is managed through a web interface we might call /household/. It relates to
 a web session whose login starts by writing the password of the household itself. It is also a
@@ -97,7 +100,7 @@ household add $HOUSEHOLD_NAME
 This command will be executed, typically, in-pod or in-container (this depends on the deployment
 type) and it must take the password via stdin (this implies taking the appropriate provisions in
 either Docker, Kubernetes or whatever is used for deployment). After setting the password, it
-must take the deployment passphrase. In order to make things secure, this command would actually
+must take the vault key (passphrase). In order to make things secure, this command would actually
 take four standard input lines:
 
 ```
@@ -114,11 +117,18 @@ For this, the lines 1 and 2 must match, and also the lines 3 and 4 must match.
 By this point, the household will be created. The user is totally responsible for backing up the
 password and the vault key. The password is used to access the household and then execute their
 commands (e.g. creating users), but also wraps the vault key. The vault key is used under the
-hoods. Typically, neither the household plane nor the user plane will make use of this key in a
+hood. Typically, neither the household plane nor the user plane will make use of this key in a
 direct way, but user requests will involve a decrypt-use-discard cycle of the encrypted (wrapped)
-key from their own records.
+key from their own records. The decrypt-use-discard cycle involves something like this:
 
-> **Please note**: The user owning the household must safely store the used key, for it cannot be
+    key = derive_key(password)
+    vault_key = decrypt(key, vault_key_envelope)
+    vault = decrypt(vault_key, vault)
+    ... work as needed ...
+    memory_clear(vault)
+    memory_clear(vault_key)
+
+> **Please note**: The user owning the household must safely store the vault key, for it cannot be
 recovered later. Instead, the key is used in scenarios involving household backup / restore, or
 recovery of the household password. All of these are done at the household level.
 
