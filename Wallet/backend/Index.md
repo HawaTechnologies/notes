@@ -26,8 +26,8 @@ the user plane manages permissions and performs the operations we care about.
 
 The topmost plane. This one has the task of defining _households_. In this context, a household
 involves the management of a familiar group, and only the master plane has the right to manage
-the households. Typical actions involve managing households, their metadata, their vaults and
-the master passwords.
+the households. Typical actions involve managing households and their metadata. On creation, the
+vault key for the household being created is also specified.
 
 With this in mind, households serve as an IAM domain, and they will be stored in an internal
 database for the server (while a database brand must be specified, what database deployment is
@@ -47,7 +47,7 @@ final ERC-4337 accounts.
 
 A household is managed by an implicit superuser (this means: each household on itself has its
 own password, as if on itself it were a kind of user). This password works as an *envelope* for
-an internal passphrase that serves to encrypt the actual vault.
+an internal passphrase that serves to encrypt the actual vault (we call it: vault key).
 
 The household plane is managed through a web interface we might call /household/. It relates to
 a web session whose login starts by writing the password of the household itself. It is also a
@@ -90,6 +90,7 @@ accessible at local level (direct commands, and never a web API).
 The first step is to create a household. It may involve an internal command like this:
 
 ```shell
+# The household name must be a slug, and will be created with a lot of default data.
 household add $HOUSEHOLD_NAME
 ```
 
@@ -111,14 +112,27 @@ Confirm: {stdin line 4}
 For this, the lines 1 and 2 must match, and also the lines 3 and 4 must match.
 
 By this point, the household will be created. The user is totally responsible for backing up the
-password and the vault key (both things are needed, but the vault key is the thing to worry more
-about, since it holds the only possibility to access the vault data).
+password and the vault key. The password is used to access the household and then execute their
+commands (e.g. creating users), but also wraps the vault key. The vault key is used under the
+hoods. Typically, neither the household plane nor the user plane will make use of this key in a
+direct way, but user requests will involve a decrypt-use-discard cycle of the encrypted (wrapped)
+key from their own records.
 
-If somehow the keys are lost, there must be a mean to recover them. This is done at the user level.
+> **Please note**: The user owning the household must safely store the used key, for it cannot be
+recovered later. Instead, the key is used in scenarios involving household backup / restore, or
+recovery of the household password. All of these are done at the household level.
 
-Other operations here involve destroying a household or modifying its metadata in some way. The
+Other operations here involve destroying a household or modifying its metadata in some way (the
 rest of the operations are done in-household, and they assume the users have access to the needed
-data: vault key, household password, or user passwords. Those commands look like:
+data: vault key, household password, or user passwords). Those commands look like:
+
+Getting an existing household:
+
+```shell
+household get $HOUSEHOLD_NAME
+```
+
+it dumps the details via stdout.
 
 Editing an existing household:
 
@@ -157,5 +171,7 @@ where we can support multiple output formats and also paging / querying.
 ### Using the household
 
 Using the household is done via HTTP and, ideally, everything behind an HTTPS-enabling proxy.
+This is because what happens here at login time / recovery time involves credentials and vault
+keys, and using pure HTTP means exposing those values.
 
-This is because what happens here at login time / recovery time involves credentials and vault keys.
+Now, all the request are household-scoped under the /$HOUSEHOLD_NAME/ prefix.
