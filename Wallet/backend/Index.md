@@ -85,6 +85,8 @@ It might even be needed a setup at master plane level (e.g. a command `initializ
 initial migrations of the database, if it's of SQL type). The master plane, however, is only
 accessible at local level (direct commands, and never a web API).
 
+### Setting up the household
+
 The first step is to create a household. It may involve an internal command like this:
 
 ```shell
@@ -112,35 +114,48 @@ By this point, the household will be created. The user is totally responsible fo
 password and the vault key (both things are needed, but the vault key is the thing to worry more
 about, since it holds the only possibility to access the vault data).
 
-If somehow the keys are lost, there must be a mean to recover them. Here, the goal is to recover
-them for the household itself. Methods are:
+If somehow the keys are lost, there must be a mean to recover them. This is done at the user level.
 
-- To provision the vault key, and reset the password. This checks the vault key first, and then
-  sets a new password for the user.
-- To provision the password, and recover the existing vault key.
+Other operations here involve destroying a household or modifying its metadata in some way. The
+rest of the operations are done in-household, and they assume the users have access to the needed
+data: vault key, household password, or user passwords. Those commands look like:
 
-Neither of these methods destroys or rotates the vault key nor the users' passwords or copies of
-the vault key. The methods look like this:
+Editing an existing household:
 
 ```shell
-household get-vault-key $HOUSEHOLD_NAME
+household update $HOUSEHOLD_NAME
 ```
 
-Which prompts for:
+taking stdin:
 
 ```
-Household password: {stdin line 1}
+# Must provide valid data:
+{whole JSON object - fields to be defined later}
 ```
 
-and also:
+Deleting an existing household:
 
 ```shell
-household reset-password $HOUSEHOLD_NAME
+# I have to decide whether deletion is complete or soft/logical.
+household delete $HOUSEHOLD_NAME
 ```
 
-Which prompts for:
+Undeleting a household (only possible if I delete them soft/locally only):
 
-```
-Household vault key: {stdin line 1}
+```shell
+household undelete $HOUSEHOLD_NAME
 ```
 
+Listing households in this node:
+
+```shell
+household list
+```
+
+where we can support multiple output formats and also paging / querying.
+
+### Using the household
+
+Using the household is done via HTTP and, ideally, everything behind an HTTPS-enabling proxy.
+
+This is because what happens here at login time / recovery time involves credentials and vault keys.
