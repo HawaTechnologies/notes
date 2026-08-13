@@ -255,4 +255,89 @@ plane.
 
 Concrete actions will be described in a later section or file.
 
-### About the security of sessions
+### About the session and their security
+
+In order to understand this section entirely, some things must be stated in order to
+guarantee the security of the overall platform.
+
+- Programming language: One of the most important things here is the management of memory.
+  Memory that can be inspected is memory that can reveal passwords or any kind of material
+  allowing decryption. This is terrible and unacceptable. This is why Python is a big NO
+  here, but Go might make sense (with Echo as HTTP library).
+- Redis: Sessions will be managed via Redis. This will hold not just valid sessions but
+  also the vaults the sessions are connected to (each session is connected to only one
+  vault). Security around this is critical and will be explained.
+- A secret. The secret can be either mounted or generated. This secret needs a very high
+  entropy, for its existence will be critical: It will be used to encrypt temporary vault
+  contents (to later be stored in a Redis collection), so they're available while sessions
+  for the respective households last, without users having to enter their password (each
+  time they want to execute an operation) for each vault unlock intention.
+
+When a user logs in successfully, the session is created by hitting the Redis server:
+
+    1. Generate a long, random, session_id.
+    2. Create a record for the session: {
+           user, household_id, created_at, last_used_at, expires_at
+       }
+    3. Store that record in the `sessions` collection the entry: $session_id => $record.
+       The difference between last_used_at and expires_at is a constant TTL, like 15 minutes.
+
+After creating the session, the vault is either already loaded or not. The idea is that
+an ATOMIC operation needs to be executed (e.g. via mutex / semaphore):
+
+    Using a server-wide mutex (mutex across replicas):
+    1. If a vault exists for household_id in `active_vaults`:
+       - Touch it (ensure it's considered `now` as the last used time, so the TTL
+         will slide to the future in its constant window but starting from now) and
+         ensure entry.count += 1.
+    2. Else:
+       - For the current user's password, follow the stated procedure to get the vault root key.
+       - If /path/to/secret does not exist, generate /path/to/secret in a crypto-secure random way.
+       - Read the contents from /path/to/secret and derive an encryption key from it.
+       - Encypt: encrypted = encrypt(secret_key, vault root ket).
+       - release the memory of vault root key.
+       - release the memory of the secret.
+       - Create the Redis entry in the `active_vaults` collection: $household_id => {
+             key: $encrypted, count: 1
+         }.
+         Ensure it has a TTL also of 15 minutes.
+
+However, on logout, the opposite must be done. First, destroy the session in Redis. Then,
+retrieve the entry from `active_vaults` related to the user's household and apply:
+
+    entry.count -= 1
+
+This must also keep the TTL up to date. However, if the count becomes 0, destroy the entry.
+
+The main point here is that the login and logout manage the reference count of the active vaults.
+Ideally, this method should work. In the worst case, the logout operation also needs messing with
+the same mutex when playing with that collection in particular.
+
+The last part is more complex and also considers the possibility of something going wrong in the
+previous steps (e.g. the active sessions vs. reference counts in active vaults not being in sync).
+It involves using the session in the in-session per-user calls. The workflow template will look
+like this:
+
+    1. Kick the user with 401 if no authentication (session id) is provided.
+    2. Get the session id, and retrieve the session entry.
+       Kick the user with 401 if the session does not exist.
+       Otherwise, touch the session to avoid expiration (resetting the TTL counter, say).
+    3. Retrieve the associated active vault from `active_vaults`.
+       If missing, destroy the session and return a 401 with a "revoked" message.
+       Otherwise, touch the active vault to avoid expiration (resetting the TTL counter, say).
+    4. Do the entire workflow:
+       - If /path/to/secret does not exist, generate /path/to/secret in a crypto-secure random way.
+       - Read the contents from /path/to/secret and derive an encryption key from it.
+       - From the active vault (for the current user's household) get the encrypted vault root key.
+       - Derive the encryption key from the secret.
+       - Decrypt the vault root key using the encryption key. If decryption fails here,
+         this means that the secret-decryption failed. In this case, destroy the entry
+         in active_vaults, then destroy the session, and then kick the user with a "revoked"
+         message (the culprit was the secret, here).
+       - Otherwise, derive the encryption key from the vault root key.
+       - THEN, DO WHATEVER IS NEEDED IN THE REQUEST. This might imply decrypting the vault contents
+         itself, especially for transactions.
+       - Finally, release the decryption key from the vault root key, the vault root key itself,
+         the decryption key derived from the secret, and the secret itself. This implies releasing
+         the associated memory.
+       - In the end, return what the underlying request returned.
