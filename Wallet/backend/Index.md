@@ -70,6 +70,10 @@ of the household. This implies:
 
 - Actions related to Parent / Alpha accounts. They manage the policies and allowances.
 - Actions related to Children / Beta accounts. They are subject to the policies.
+  - There's another type of account: Sigma. They're not subject to policies and limitations,
+    but still cannot access the parents' features and management entry points. They're
+    intended for grown adults, guests or friends. They can, still, contribute to the usage
+    statistics on dApps or contracts, if they want.
 - Actions related to RPC and signatures.
 - Actions related to ERC-4337 account deployments and maintenance.
 
@@ -411,3 +415,36 @@ Decryption failure usually means that the active vault was encrypted with a diff
 session-cache secret, for example after a container / pod recreation when the secret was generated
 internally instead of mounted. Treat this as session invalidation, not as a recoverable vault
 operation.
+
+Extra steps in this workflow occur only if the operation includes changes in the vault (e.g. when
+a new key is added or so). In this case, after the operation executes, the vault must be modified
+and the new changes must be encrypted and stored. All these mentions reinforce the idea of needing
+household-level atomicity in operations (so a per-household mutex or so is needed on each request
+workflow).
+
+## Exposed features
+
+The features in this server are grouped by categories and involve different roles which, in turn,
+involve the already-defined users. These users, among the usual things (username, password, ...),
+are characterized by their role (only one role per user):
+
+- Parents: They're users which have free participation on any EVM chain, dapp and contract.
+  They can opt into the usage statistics of dApps and contracts of the household.
+- Children: They're users which have constrained participation on any EVM chain. They're always
+  monitored into the statistics of dApps and contracts of the household. Parents determine which
+  policies are children subject to, and also can modify children accounts to become Adults (see
+  next entries).
+- Adults: They're adult users which have free participation on any EVM chain, dapp and contract.
+  They can opt into the usage statistics of dApps and contracts of the household. However, they
+  don't have the rights to manage policies of children (neither as group nor individuals). They
+  are just unrestricted. Parents still manage the user records, so the Adult role can be changed
+  or revoked by them, turning them into children.
+
+Parents are only created by the superuser / household access. The household access has ultimate
+power on creating accounts and setting their roles. Parents cannot, however, create any parent
+account or modify other parent accounts in any way (especially: removing another parent's role
+to make it non-parent). Also, while only the user plane is the place where parents set up policies
+to other users, parents cannot change policies on other parent users in the household, while they
+can change policies to other users (however: policies have no effect on users that are Adults,
+at least until the account is switched back to being Child).
+
