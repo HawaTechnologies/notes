@@ -429,16 +429,13 @@ involve the already-defined users. These users, among the usual things (username
 are characterized by their role (only one role per user):
 
 - Parents: They're users which have free participation on any EVM chain, dapp and contract.
-  They can opt into the usage statistics of dApps and contracts of the household.
-- Children: They're users which have constrained participation on any EVM chain. They're always
-  monitored into the statistics of dApps and contracts of the household. Parents determine which
-  policies are children subject to, and also can modify children accounts to become Adults (see
-  next entries).
+- Children: They're users which have constrained participation on any EVM chain. Parents determine
+  which policies are children subject to, and also can modify children accounts to become Adults
+  (see next entries).
 - Adults: They're adult users which have free participation on any EVM chain, dapp and contract.
-  They can opt into the usage statistics of dApps and contracts of the household. However, they
-  don't have the rights to manage policies of children (neither as group nor individuals). They
-  are just unrestricted. Parents still manage the user records, so the Adult role can be changed
-  or revoked by them, turning them into children.
+  However, they don't have the rights to manage policies of children (neither as group nor
+  individuals). They are just unrestricted. Parents still manage the user records, so the Adult
+  role can be changed or revoked by them, turning them into children.
 
 Parents are only created by the superuser / household access. The household access has ultimate
 power on creating accounts and setting their roles. Parents cannot, however, create any parent
@@ -448,3 +445,10 @@ to other users, parents cannot change policies on other parent users in the hous
 can change policies to other users (however: policies have no effect on users that are Adults,
 at least until the account is switched back to being Child).
 
+Accounts track their statistics on transactions, being simple ones to other user, simple ones to
+a contract, or contract method invocation. Each user can see their own statistics, but parents
+can also see statistics on any child account in the same household.
+
+Finally, accounts make transactions and even private bunders can be per-network deployed.
+
+All these features will be described in related files.
