@@ -68,12 +68,12 @@ The typical features in the household plane involve:
 Once users exist inside the household, the user plane lets users configure different aspects
 of the household. This implies:
 
-- Actions related to Parent / Alpha accounts. They manage the policies and allowances.
-- Actions related to Children / Beta accounts. They are subject to the policies.
-  - There's another type of account: Sigma. They're not subject to policies and limitations,
-    but still cannot access the parents' features and management entry points. They're
-    intended for grown adults, guests or friends. They can, still, contribute to the usage
-    statistics on dApps or contracts, if they want.
+- Actions related to Parent accounts. They manage the policies and allowances.
+- Actions related to Child accounts. They are subject to the policies.
+- Actions related to Adult accounts. They're not subject to policies and limitations,
+  but still cannot access the parents' features and management entry points. They're
+  intended for grown adults, guests or friends. They can, still, contribute to the usage
+  statistics on dApps or contracts, if they want.
 - Actions related to RPC and signatures.
 - Actions related to ERC-4337 account deployments and maintenance.
 
@@ -211,7 +211,7 @@ effective the password reset.
 
 This command is the only way to restore the password of the superuser, if it is
 lost. The superuser is in charge of rotating the vault key if it also forgot it.
-That one is done, however, in the user plane (and described in the corresponding
+That one is done, however, in the household plane (and described in the corresponding
 file).
 
 #### A word on passwords, keys and encryption
