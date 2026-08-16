@@ -184,6 +184,36 @@ household list
 
 where we can support multiple output formats and also paging / querying.
 
+Also, resetting the household password from one of the users is something that must
+be done only here:
+
+```shell
+household password-reset $HOUSEHOLD_NAME $SOME_IN_HOUSEHOLD_USER
+```
+
+taking stdin:
+
+```
+Usesrname: {stdin line 1}
+Password: {stdin line 2}
+New Household Password: {stdin line 3}
+Confirm: {stdin line 4}
+```
+
+Line 1 in-household user to get the internal vault key from.
+Line 2 is its password.
+
+In this case, a fake login is attempted and the internal vault key is discovered.
+
+Then, the new / confirm passwords must match, and the new password is set for the
+household itself, also enveloping the vault key in the household itself, thus making
+effective the password reset.
+
+This command is the only way to restore the password of the superuser, if it is
+lost. The superuser is in charge of rotating the vault key if it also forgot it.
+That one is done, however, in the user plane (and described in the corresponding
+file).
+
 #### A word on passwords, keys and encryption
 
 1. The vault recovery phrase, as described earlier, is a 24-word BIP-39 mnemonic. It
