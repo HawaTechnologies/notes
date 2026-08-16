@@ -135,8 +135,8 @@ something like this:
     memory_clear(vault_root_key)
 
 > **Please note**: The user owning the household must safely store the vault recovery phrase, for
-it cannot be recovered later. Instead, the phrase is used in scenarios involving household backup
-/ restore, or recovery of the household password. All of these are done at the household level.
+> it cannot be recovered later. Instead, the phrase is used in scenarios involving household backup
+> / restore, or recovery of the household password. All of these are done at the household level.
 
 Other operations here involve destroying a household or modifying its metadata in some way (the
 rest of the operations are done in-household, and they assume the users have access to the needed
