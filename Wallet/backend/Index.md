@@ -179,10 +179,13 @@ household undelete $HOUSEHOLD_NAME
 Listing households in this node:
 
 ```shell
-household list
+household list [--deleted] [--skip=X] [--limit=Y]
 ```
 
-where we can support multiple output formats and also paging / querying.
+where we can support multiple output formats and also paging / querying. The `--deleted`
+flag lists the deleted households instead of non-deleted ones. `X` is `0` by default, or
+if it was specified as other than a positive integer number. `Y` is `20` by default, or
+if it was specified as other than a positive integer value.
 
 Also, resetting the household password from one of the users is something that must
 be done only here:
